@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>YatraGo — Book Flights, Trains & Buses</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#0ea5e9;--sky2:#38bdf8;--sky3:#7dd3fc;--sky4:#bae6fd;--sky5:#e0f2fe;
+  --navy:#0c4a6e;--navy2:#075985;--navy3:#0369a1;
+  --orange:#f97316;--orange2:#fb923c;
+  --green:#22c55e;--red:#ef4444;--purple:#8b5cf6;--pink:#ec4899;--yellow:#f59e0b;
+  --white:#ffffff;--bg:#f0f9ff;--bg2:#e0f2fe;--bg3:#f8fafc;
+  --card:#ffffff;--dark:#0c1f2e;--dark2:#1e3a4f;
+  --text:#0c1f2e;--text2:#334155;--text3:#64748b;--text4:#94a3b8;
+  --border:#bae6fd;--border2:#7dd3fc;
+  --shadow:0 4px 20px rgba(14,165,233,0.12);
+  --shadow-lg:0 12px 40px rgba(14,165,233,0.18);
+  --glow:0 0 30px rgba(14,165,233,0.25);
+  --radius:14px;--radius-lg:22px;--radius-sm:8px;
+  --font:'Inter',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;}
+button{font-family:var(--font);cursor:pointer;}
+input,select{font-family:var(--font);}
+
+/* ── TOPSTRIP ─────────────────────────────────────────────── */
+.top-strip{background:linear-gradient(90deg,var(--navy),var(--navy3),var(--sky));color:#fff;font-size:0.75rem;padding:8px 0;text-align:center;letter-spacing:.04em;}
+.top-strip b{color:var(--sky3);}
+
+/* ── NAVBAR ───────────────────────────────────────────────── */
+.nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(14,165,233,0.08);}
+.nav-inner{max-width:1300px;margin:0 auto;padding:0 28px;height:68px;display:flex;align-items:center;gap:8px;}
+.logo{display:flex;align-items:center;gap:12px;margin-right:28px;cursor:pointer;flex-shrink:0;}
+.logo-box{width:44px;height:44px;background:linear-gradient(135deg,var(--sky),var(--navy3));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(14,165,233,0.3);}
+.logo-box svg{width:26px;height:26px;fill:#fff;}
+.logo-name{font-size:1.5rem;font-weight:900;color:var(--dark);}
+.logo-name span{color:var(--sky);}
+.nav-tabs{display:flex;gap:2px;}
+.nav-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 18px;border:none;background:none;color:var(--text3);font-size:0.8rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;position:relative;top:1px;}
+.nav-tab .ti{font-size:1.15rem;}
+.nav-tab:hover{color:var(--sky);border-bottom-color:var(--sky3);}
+.nav-tab.active{color:var(--sky);border-bottom-color:var(--sky);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.nav-my-bookings{display:flex;align-items:center;gap:6px;padding:9px 16px;border:1.5px solid var(--border2);border-radius:10px;background:none;color:var(--text2);font-size:0.82rem;font-weight:700;cursor:pointer;transition:.2s;}
+.nav-my-bookings:hover{border-color:var(--sky);color:var(--sky);background:var(--sky5);}
+.btn-login{padding:9px 22px;border:2px solid var(--sky);border-radius:10px;background:none;color:var(--sky);font-weight:700;font-size:0.88rem;transition:.2s;}
+.btn-login:hover{background:var(--sky5);}
+.btn-signup{padding:9px 22px;border-radius:10px;background:linear-gradient(135deg,var(--sky),var(--navy3));border:none;color:#fff;font-weight:700;font-size:0.88rem;box-shadow:0 3px 12px rgba(14,165,233,0.35);transition:.2s;}
+.btn-signup:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,165,233,0.45);}
+.user-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--navy3));color:#fff;font-weight:800;font-size:1rem;border:2px solid var(--sky3);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+
+/* ── PAGES ────────────────────────────────────────────────── */
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 35%,var(--sky) 65%,var(--sky2) 85%,#7dd3fc 100%);position:relative;overflow:hidden;padding:48px 28px 0;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 120%,rgba(255,255,255,0.12) 0%,transparent 70%);}
+.hero::after{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);}
+.hero-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;position:relative;z-index:1;}
+.hero-left{padding-bottom:48px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:100px;padding:6px 16px;font-size:0.75rem;color:rgba(255,255,255,0.9);margin-bottom:20px;backdrop-filter:blur(10px);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.hero h1{font-size:clamp(2rem,4vw,3.4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:10px;text-shadow:0 2px 12px rgba(0,0,0,0.15);}
+.hero h1 .grad{background:linear-gradient(90deg,#fbbf24,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:rgba(255,255,255,0.82);font-size:1rem;font-weight:500;margin-bottom:28px;}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.hs{text-align:center;}
+.hs-num{font-size:1.4rem;font-weight:900;color:#fff;}
+.hs-label{font-size:0.7rem;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:.06em;}
+/* Hero vehicles floating */
+.hero-right{display:flex;align-items:flex-end;justify-content:center;gap:20px;padding-bottom:0;}
+.hv{display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:32px;}
+.hv-icon{font-size:4.5rem;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.25));animation:hvFloat 3s ease-in-out infinite;}
+.hv:nth-child(2) .hv-icon{animation-delay:.6s;font-size:5rem;}
+.hv:nth-child(3) .hv-icon{animation-delay:1.2s;}
+@keyframes hvFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+.hv-label{color:rgba(255,255,255,0.85);font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:100px;backdrop-filter:blur(8px);}
+
+/* ── SPECIAL FARES ────────────────────────────────────────── */
+.sf-bar{background:#fff;border-bottom:1px solid var(--border);padding:11px 28px;}
+.sf-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sf-title{font-size:0.73rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+.sf-chip{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:none;font-size:0.78rem;font-weight:600;color:var(--text2);cursor:pointer;transition:.2s;white-space:nowrap;}
+.sf-chip:hover,.sf-chip.on{border-color:var(--sky);color:var(--sky);background:var(--sky5);}
+.sf-chip .sf-s{font-size:0.65rem;color:var(--text4);display:block;}
+
+/* ── SEARCH CARD ──────────────────────────────────────────── */
+.search-wrap{background:#fff;padding:0 28px 28px;}
+.search-card{max-width:1300px;margin:0 auto;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);}
+.s-tabs{display:flex;gap:6px;margin-bottom:22px;}
+.s-tab{display:flex;align-items:center;gap:8px;padding:10px 24px;border-radius:100px;border:1.5px solid var(--border);background:none;font-size:0.88rem;font-weight:700;color:var(--text3);cursor:pointer;transition:.2s;}
+.s-tab:hover{border-color:var(--sky);color:var(--sky);}
+.s-tab.active{background:linear-gradient(135deg,var(--sky),var(--navy3));border-color:transparent;color:#fff;box-shadow:0 3px 14px rgba(14,165,233,0.35);}
+.s-fields{display:grid;grid-template-columns:1fr 40px 1fr 1fr auto;gap:0;border:1.5px solid var(--border);border-radius:14px;overflow:visible;background:#fff;}
+.sf{display:flex;flex-direction:column;padding:14px 20px;border-right:1px solid var(--border);cursor:text;transition:.2s;position:relative;}
+.sf:hover{background:var(--sky5);}
+.sf label{font-size:0.68rem;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;}
+.sf input,.sf select{border:none;outline:none;font-size:1.05rem;font-weight:700;color:var(--dark);background:transparent;width:100%;}
+.sf input::placeholder{color:var(--text4);font-weight:400;}
+.sf .sf-sub{font-size:0.72rem;color:var(--text4);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.swap-wrap{display:flex;align-items:center;justify-content:center;position:relative;border-right:1px solid var(--border);}
+.swap-c{width:34px;height:34px;border-radius:50%;border:2px solid var(--border2);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:.3s;position:absolute;z-index:2;box-shadow:var(--shadow);}
+.swap-c:hover{border-color:var(--sky);transform:rotate(180deg);background:var(--sky5);}
+.search-go{padding:0 36px;background:linear-gradient(135deg,var(--sky),var(--navy3));border:none;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;transition:.2s;letter-spacing:.03em;border-radius:0 12px 12px 0;}
+.search-go:hover{background:linear-gradient(135deg,var(--navy3),var(--navy));}
+
+/* ── OFFERS ───────────────────────────────────────────────── */
+.offers-sec{padding:36px 28px;max-width:1300px;margin:0 auto;}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.sec-title{font-size:1.2rem;font-weight:800;color:var(--dark);}
+.sec-va{color:var(--sky);font-size:0.85rem;font-weight:700;cursor:pointer;}
+.offer-tabs{display:flex;gap:8px;margin-bottom:18px;overflow-x:auto;padding-bottom:4px;}
+.ot{padding:7px 18px;border-radius:100px;border:1.5px solid var(--border);background:none;font-size:0.8rem;font-weight:600;color:var(--text3);cursor:pointer;transition:.2s;white-space:nowrap;}
+.ot.active,.ot:hover{border-color:var(--sky);color:var(--sky);background:var(--sky5);}
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+.oc{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:.25s;}
+.oc:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--sky3);}
+.oc-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;}
+.oc-img.fl{background:linear-gradient(135deg,var(--sky),var(--navy3));}
+.oc-img.tr{background:linear-gradient(135deg,#059669,#10b981);}
+.oc-img.bu{background:linear-gradient(135deg,var(--orange),#b45309);}
+.oc-img.ho{background:linear-gradient(135deg,var(--purple),#6d28d9);}
+.oc-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.55);color:#fff;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:100px;}
+.oc-body{padding:14px 16px;}
+.oc-title{font-weight:700;font-size:0.92rem;color:var(--dark);}
+.oc-desc{font-size:0.77rem;color:var(--text3);margin-top:3px;}
+.oc-price{font-size:1.1rem;font-weight:800;color:var(--sky);margin-top:6px;}
+
+/* ── POPULAR ROUTES ───────────────────────────────────────── */
+.routes-sec{padding:0 28px 36px;max-width:1300px;margin:0 auto;}
+.routes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.rchip{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:space-between;}
+.rchip:hover{border-color:var(--sky);background:var(--sky5);transform:translateY(-2px);box-shadow:var(--shadow);}
+.rchip-left .rr{font-weight:700;color:var(--dark);font-size:0.92rem;}
+.rchip-left .rp{font-size:0.77rem;color:var(--sky);margin-top:3px;font-weight:600;}
+.rchip-left .rd{font-size:0.63rem;color:var(--text4);margin-top:2px;}
+.rchip-arr{color:var(--text4);font-size:1.2rem;}
+
+/* ── RESULTS PAGE ─────────────────────────────────────────── */
+.rp-header{background:#fff;border-bottom:1px solid var(--border);padding:16px 28px;}
+.rp-inner{max-width:1300px;margin:0 auto;}
+.rp-title{font-size:1.2rem;font-weight:800;color:var(--dark);}
+.rp-meta{font-size:0.8rem;color:var(--text3);margin-top:5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.algo-tag{background:linear-gradient(135deg,var(--sky),var(--navy3));color:#fff;font-size:0.66rem;font-weight:700;padding:3px 10px;border-radius:100px;}
+.rl-wrap{display:grid;grid-template-columns:290px 1fr;gap:20px;padding:20px 28px;max-width:1300px;margin:0 auto;}
+
+/* FILTER PANEL */
+.fp{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);height:fit-content;position:sticky;top:78px;overflow:hidden;}
+.fp-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--sky5),#fff);}
+.fp-title{font-weight:800;font-size:0.95rem;color:var(--dark);}
+.fp-reset{font-size:0.78rem;color:var(--sky);cursor:pointer;font-weight:700;}
+.fp-sec{padding:16px 20px;border-bottom:1px solid var(--border);}
+.fp-sec:last-child{border-bottom:none;}
+.fp-label{font-size:0.7rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dsa-mini{background:var(--sky);color:#fff;font-size:0.58rem;padding:1px 7px;border-radius:100px;font-weight:800;}
+.fp-price-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.fp-pi{padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.83rem;font-weight:700;color:var(--dark);outline:none;text-align:center;}
+.fp-pi:focus{border-color:var(--sky);}
+.fp-slider{width:100%;accent-color:var(--sky);margin-bottom:5px;}
+.fp-slider-lbl{font-size:0.75rem;color:var(--sky);font-weight:700;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:6px 13px;border-radius:100px;border:1.5px solid var(--border);background:none;font-size:0.76rem;font-weight:600;color:var(--text3);cursor:pointer;transition:.2s;}
+.chip:hover,.chip.on{border-color:var(--sky);color:var(--sky);background:var(--sky5);}
+.fp-sort{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:0.85rem;font-weight:600;color:var(--dark);outline:none;}
+.fp-sort:focus{border-color:var(--sky);}
+.fp-dsa{background:linear-gradient(135deg,var(--sky5),var(--bg2));border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin:14px 20px 16px;}
+.fp-dsa h4{font-size:0.73rem;font-weight:800;color:var(--sky);margin-bottom:6px;}
+.fp-dsa p{font-size:0.7rem;color:var(--text3);line-height:1.6;}
+
+/* RESULT CARDS */
+.rc-list{display:flex;flex-direction:column;gap:14px;}
+.rcard{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.25s;animation:fadeUp .35s ease both;}
+.rcard:hover{border-color:var(--sky3);box-shadow:var(--shadow-lg);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+/* Card top */
+.rc-top{padding:18px 22px;display:flex;align-items:center;gap:16px;}
+.airline-box{width:54px;height:54px;border-radius:12px;background:var(--sky5);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.88rem;color:var(--sky);flex-shrink:0;}
+.route-mid-wrap{flex:1;display:flex;align-items:center;gap:14px;}
+.time-blk{text-align:center;min-width:64px;}
+.t-time{font-size:1.4rem;font-weight:900;color:var(--dark);line-height:1;}
+.t-city{font-size:0.72rem;color:var(--text3);margin-top:3px;}
+.t-airport{font-size:0.65rem;color:var(--text4);margin-top:1px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mid-line-wrap{flex:1;text-align:center;}
+.mid-dur{font-size:0.72rem;color:var(--text4);font-weight:600;margin-bottom:5px;}
+.mid-line{height:2px;background:linear-gradient(90deg,var(--border),var(--sky),var(--border));position:relative;}
+.stop-dot-mid{width:8px;height:8px;border-radius:50%;background:var(--orange);border:2px solid #fff;box-shadow:0 0 0 2px var(--orange);position:absolute;top:-3px;left:50%;transform:translateX(-50%);}
+.mid-stops-txt{font-size:0.68rem;margin-top:5px;font-weight:600;}
+.direct-lbl{color:var(--green);}
+.stop-lbl{color:var(--orange);}
+.price-blk{margin-left:auto;text-align:right;min-width:115px;}
+.p-from{font-size:0.67rem;color:var(--text4);}
+.p-val{font-size:1.5rem;font-weight:900;color:var(--dark);line-height:1;}
+.p-per{font-size:0.7rem;color:var(--text4);}
+.p-surge{font-size:0.68rem;color:var(--red);font-weight:700;margin-top:3px;}
+/* Stations row */
+.stations-row{padding:8px 22px;background:var(--sky5);border-top:1px solid var(--border);font-size:0.72rem;color:var(--navy3);display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.station-item{display:flex;align-items:center;gap:4px;}
+.station-dot{width:7px;height:7px;border-radius:50%;background:var(--sky);flex-shrink:0;}
+/* Stops path MAP */
+.stops-map{padding:12px 22px;border-top:1px solid var(--border);background:#f8fbff;}
+.stops-map-label{font-size:0.68rem;color:var(--sky);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.stops-path{display:flex;align-items:center;overflow-x:auto;padding-bottom:4px;}
+.sp-node{display:flex;flex-direction:column;align-items:center;min-width:80px;}
+.sp-name{font-size:0.67rem;color:var(--text2);text-align:center;line-height:1.3;margin-bottom:5px;max-width:76px;}
+.sp-dot{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--sky3);background:#fff;box-shadow:0 0 0 3px rgba(14,165,233,0.15);}
+.sp-node.src .sp-dot,.sp-node.dst .sp-dot{background:var(--sky);border-color:var(--navy3);box-shadow:0 0 0 3px rgba(14,165,233,0.25);}
+.sp-node.src .sp-name,.sp-node.dst .sp-name{color:var(--sky);font-weight:700;}
+.sp-edge{flex:1;height:2px;background:linear-gradient(90deg,var(--sky3),var(--sky),var(--sky3));min-width:44px;margin-top:-7px;position:relative;}
+.sp-edge::after{content:'›';position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:0.9rem;color:var(--sky);}
+/* Classes */
+.classes-row{padding:12px 22px;border-top:1px solid var(--border);background:var(--bg3);display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.cr-lbl{font-size:0.7rem;color:var(--text4);font-weight:600;margin-right:4px;}
+.cls-btn{padding:8px 16px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:0.78rem;font-weight:700;color:var(--text3);cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:2px;align-items:center;}
+.cls-btn:hover{border-color:var(--sky);color:var(--sky);}
+.cls-btn.sel{border-color:var(--sky);background:var(--sky5);color:var(--sky);}
+.cls-btn .cn{font-size:0.67rem;text-transform:uppercase;letter-spacing:.05em;opacity:.7;}
+.cls-btn .cp{font-size:0.85rem;font-weight:800;}
+.cls-btn .cs{font-size:0.62rem;color:var(--text4);}
+/* DSA trace */
+.dsa-row{padding:8px 22px;background:linear-gradient(90deg,rgba(14,165,233,0.05),rgba(14,165,233,0.02));border-top:1px solid rgba(14,165,233,0.15);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.dsa-tag{background:linear-gradient(135deg,var(--sky),var(--navy3));color:#fff;font-size:0.64rem;font-weight:800;padding:2px 9px;border-radius:100px;white-space:nowrap;}
+.dsa-txt{font-size:0.7rem;color:var(--text3);}
+/* Card bottom */
+.rc-bot{padding:10px 22px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.tag{padding:4px 10px;border-radius:100px;font-size:0.68rem;font-weight:600;border:1.5px solid var(--border);color:var(--text3);}
+.tag.g{border-color:rgba(34,197,94,.3);color:var(--green);background:rgba(34,197,94,.05);}
+.tag.b{border-color:rgba(14,165,233,.3);color:var(--sky);background:var(--sky5);}
+.tag.o{border-color:rgba(249,115,22,.3);color:var(--orange);background:rgba(249,115,22,.05);}
+.tag.r{border-color:rgba(239,68,68,.3);color:var(--red);background:rgba(239,68,68,.05);}
+.book-btn{margin-left:auto;padding:10px 28px;background:linear-gradient(135deg,var(--sky),var(--navy3));border:none;border-radius:9px;color:#fff;font-weight:800;font-size:0.88rem;transition:.2s;white-space:nowrap;}
+.book-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(14,165,233,0.4);}
+
+/* ── BOOKING MODAL ────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(12,30,46,0.72);backdrop-filter:blur(8px);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:#fff;border-radius:22px;padding:32px;width:100%;max-width:580px;position:relative;box-shadow:var(--shadow-lg);margin:auto;}
+.modal h2{font-size:1.4rem;font-weight:900;color:var(--dark);margin-bottom:3px;}
+.modal-sub{color:var(--text3);font-size:0.85rem;margin-bottom:22px;}
+.mcl{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:#fff;font-size:1rem;color:var(--text3);cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;}
+.mcl:hover{border-color:var(--red);color:var(--red);}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:0.72rem;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.fg input,.fg select{width:100%;padding:11px 15px;border:1.5px solid var(--border);border-radius:10px;font-size:0.92rem;font-weight:600;color:var(--dark);outline:none;transition:.2s;}
+.fg input:focus,.fg select:focus{border-color:var(--sky);}
+.fg-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.err{background:rgba(239,68,68,.07);border:1.5px solid rgba(239,68,68,.3);border-radius:9px;padding:10px 14px;color:var(--red);font-size:0.82rem;margin-bottom:12px;display:none;}
+.err.show{display:block;}
+/* Priority viz */
+.pv{background:linear-gradient(135deg,var(--sky5),#fff);border:1.5px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
+.pv-t{font-size:0.78rem;font-weight:800;color:var(--sky);margin-bottom:10px;}
+.pv-levels{display:flex;flex-direction:column;gap:6px;}
+.pv-l{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;font-size:0.8rem;color:var(--text3);transition:.3s;}
+.pv-l.on{background:rgba(14,165,233,0.08);color:var(--dark);font-weight:700;}
+.pv-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+/* Passenger list */
+.pax-list{margin-bottom:14px;}
+.pax-item{background:var(--sky5);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;position:relative;}
+.pax-num{font-size:0.72rem;color:var(--sky);font-weight:800;margin-bottom:10px;}
+.pax-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;}
+.add-pax-btn{width:100%;padding:10px;border:2px dashed var(--border2);border-radius:10px;background:none;color:var(--sky);font-weight:700;font-size:0.85rem;cursor:pointer;transition:.2s;margin-bottom:14px;}
+.add-pax-btn:hover{background:var(--sky5);}
+/* Book summary */
+.bsum{background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:16px;}
+.bs-r{display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem;}
+.bs-r span:first-child{color:var(--text3);}
+.bs-r span:last-child{font-weight:700;color:var(--dark);}
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--sky),var(--navy3));border:none;border-radius:11px;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;transition:.2s;margin-top:8px;box-shadow:0 4px 16px rgba(14,165,233,0.3);}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(14,165,233,0.4);}
+.fsw{text-align:center;margin-top:14px;font-size:0.85rem;color:var(--text3);}
+.fsw a{color:var(--sky);cursor:pointer;font-weight:700;}
+
+/* ── DASHBOARD ────────────────────────────────────────────── */
+.dash-hd{background:linear-gradient(135deg,var(--navy),var(--sky));padding:44px 28px;}
+.dash-hd h1{font-size:1.8rem;font-weight:900;color:#fff;}
+.dash-hd p{color:rgba(255,255,255,0.8);margin-top:4px;}
+.dash-body{max-width:920px;margin:0 auto;padding:24px 28px;}
+.dash-empty{text-align:center;padding:80px 20px;}
+.de-icon{font-size:5rem;display:block;margin-bottom:18px;}
+.bcard{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:14px;animation:fadeUp .3s ease both;}
+.bcard-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.tb{padding:4px 12px;border-radius:100px;font-size:0.72rem;font-weight:800;}
+.tb-fl{background:rgba(14,165,233,.1);color:var(--sky);}
+.tb-tr{background:rgba(34,197,94,.1);color:var(--green);}
+.tb-bu{background:rgba(249,115,22,.1);color:var(--orange);}
+.sc{padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:700;}
+.sc-ok{background:rgba(34,197,94,.1);color:var(--green);}
+.sc-no{background:rgba(239,68,68,.1);color:var(--red);}
+.seat-badge{background:rgba(139,92,246,.1);color:var(--purple);padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:700;}
+.bcard-route{font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:3px;}
+.bcard-meta{font-size:0.8rem;color:var(--text3);}
+.bcard-bot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.bcard-amt{font-size:1.3rem;font-weight:900;color:var(--sky);}
+.cancel-s{padding:7px 16px;border:1.5px solid var(--border);border-radius:8px;background:none;color:var(--text3);font-size:0.78rem;font-weight:600;cursor:pointer;transition:.2s;}
+.cancel-s:hover{border-color:var(--red);color:var(--red);}
+
+/* ── TOAST ────────────────────────────────────────────────── */
+.toasts{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:13px 18px;font-size:0.85rem;font-weight:600;min-width:300px;box-shadow:var(--shadow-lg);animation:toastIn .3s ease;}
+@keyframes toastIn{from{transform:translateX(110%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.toast.success{border-color:rgba(34,197,94,.4);color:var(--green);}
+.toast.error{border-color:rgba(239,68,68,.4);color:var(--red);}
+.toast.info{border-color:var(--border2);color:var(--sky);}
+
+/* ── MISC ─────────────────────────────────────────────────── */
+.skel{background:linear-gradient(90deg,var(--bg3) 25%,var(--border) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;}
+@keyframes shimmer{to{background-position:-200% 0;}}
+.empty-st{text-align:center;padding:80px 20px;color:var(--text4);}
+.empty-st span{font-size:3.5rem;display:block;margin-bottom:14px;}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .s-fields{grid-template-columns:1fr 1fr;}
+  .search-go{border-radius:0 0 12px 12px;padding:14px;}
+  .rl-wrap{grid-template-columns:1fr;}
+  .fp{position:static;}
+}
+</style>
+</head>
+<body>
+
+<div class="top-strip">🎉 DSA-powered travel — <b>Merge Sort + Dijkstra's Algorithm + Priority Queue</b> running live!</div>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="nav">
+<div class="nav-inner">
+  <div class="logo" onclick="showPage('home')">
+    <div class="logo-box">
+      <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+    </div>
+    <div class="logo-name">Yatra<span>Go</span></div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="setNavTab(this,'flights')"><span class="ti">✈️</span>Flights</button>
+    <button class="nav-tab" onclick="setNavTab(this,'trains')"><span class="ti">🚂</span>Trains</button>
+    <button class="nav-tab" onclick="setNavTab(this,'buses')"><span class="ti">🚌</span>Buses</button>
+  </div>
+  <div class="nav-right">
+    <button class="nav-my-bookings" onclick="showPage('dashboard')">🧳 My Bookings</button>
+    <div id="auth-btns" style="display:flex;gap:8px;">
+      <button class="btn-login" onclick="openAuth('login')">Login</button>
+      <button class="btn-signup" onclick="openAuth('signup')">Sign Up</button>
+    </div>
+    <div id="user-area" style="display:none;align-items:center;gap:10px;">
+      <button class="user-av" id="nav-av" onclick="showPage('dashboard')">U</button>
+      <button class="cancel-s" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HOME PAGE ═══ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge"><span class="live-dot"></span>Live DSA Algorithms Running</div>
+        <h1>Book <span class="grad">Flights,</span><br>Trains & Buses</h1>
+        <p>India's smartest travel booking — powered by 8 DSA algorithms</p>
+        <div class="hero-stats">
+          <div class="hs"><div class="hs-num">200+</div><div class="hs-label">Cities</div></div>
+          <div class="hs"><div class="hs-num">70+</div><div class="hs-label">Flights</div></div>
+          <div class="hs"><div class="hs-num">40+</div><div class="hs-label">Trains</div></div>
+          <div class="hs"><div class="hs-num">40+</div><div class="hs-label">Buses</div></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hv"><span class="hv-icon">🚌</span><span class="hv-label">Bus</span></div>
+        <div class="hv"><span class="hv-icon">🚂</span><span class="hv-label">Train</span></div>
+        <div class="hv"><span class="hv-icon">✈️</span><span class="hv-label">Flight</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPECIAL FARES -->
+  <div class="sf-bar">
+    <div class="sf-inner">
+      <span class="sf-title">Special Fares:</span>
+      <button class="sf-chip on">Regular<span class="sf-s">Standard fares</span></button>
+      <button class="sf-chip">Student<span class="sf-s">Extra discounts</span></button>
+      <button class="sf-chip">Senior Citizen<span class="sf-s">Up to ₹600 off</span></button>
+      <button class="sf-chip">Armed Forces<span class="sf-s">Up to ₹600 off</span></button>
+      <button class="sf-chip">Doctor & Nurses<span class="sf-s">Up to ₹600 off</span></button>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-card">
+      <div class="s-tabs">
+        <button class="s-tab active" onclick="setSearchTab(this,'flights')">✈️ Flights</button>
+        <button class="s-tab" onclick="setSearchTab(this,'trains')">🚂 Trains</button>
+        <button class="s-tab" onclick="setSearchTab(this,'buses')">🚌 Buses</button>
+      </div>
+      <div class="s-fields">
+        <div class="sf" style="border-radius:12px 0 0 12px;">
+          <label>From</label>
+          <input id="s-from" list="cdl" placeholder="Delhi" autocomplete="off" oninput="fetchCities(this)">
+          <span class="sf-sub" id="from-sub">e.g. Delhi, New Delhi Station</span>
+        </div>
+        <div class="swap-wrap">
+          <div class="swap-c" onclick="swapCities()">⇄</div>
+        </div>
+        <div class="sf">
+          <label>To</label>
+          <input id="s-to" list="cdl" placeholder="Mumbai" autocomplete="off" oninput="fetchCities(this)">
+          <span class="sf-sub" id="to-sub">e.g. Mumbai, CSIA Airport</span>
+        </div>
+        <div class="sf">
+          <label>Date</label>
+          <input id="s-date" type="date">
+          <span class="sf-sub" id="date-day">Select date</span>
+        </div>
+        <button class="search-go" onclick="doSearch()">SEARCH</button>
+      </div>
+      <datalist id="cdl"></datalist>
+    </div>
+  </div>
+
+  <!-- OFFERS -->
+  <div class="offers-sec">
+    <div class="sec-hd"><div class="sec-title">🎁 Offers For You</div><div class="sec-va">View All ›</div></div>
+    <div class="offer-tabs">
+      <button class="ot active">All</button>
+      <button class="ot">Flights</button>
+      <button class="ot">Trains</button>
+      <button class="ot">Buses</button>
+    </div>
+    <div class="offers-grid">
+      <div class="oc" onclick="quickSearch('Delhi','Mumbai','flights')">
+        <div class="oc-img fl"><span>✈️</span><div class="oc-badge">FLIGHT DEAL</div></div>
+        <div class="oc-body"><div class="oc-title">Delhi → Mumbai</div><div class="oc-desc">10 flights · Economy/Business/First · Merge Sorted</div><div class="oc-price">From ₹2,299</div></div>
+      </div>
+      <div class="oc" onclick="quickSearch('Delhi','Mumbai','trains')">
+        <div class="oc-img tr"><span>🚂</span><div class="oc-badge">TRAIN DEAL</div></div>
+        <div class="oc-body"><div class="oc-title">Delhi → Mumbai Train</div><div class="oc-desc">6 trains · Rajdhani, Duronto & more · Priority seats</div><div class="oc-price">From ₹550</div></div>
+      </div>
+      <div class="oc" onclick="quickSearch('Delhi','Jaipur','buses')">
+        <div class="oc-img bu"><span>🚌</span><div class="oc-badge">BUS DEAL</div></div>
+        <div class="oc-body"><div class="oc-title">Delhi → Jaipur Bus</div><div class="oc-desc">8 buses · Volvo, AC Sleeper, Non-AC · All timings</div><div class="oc-price">From ₹299</div></div>
+      </div>
+      <div class="oc" onclick="quickSearch('Mumbai','Bangalore','flights')">
+        <div class="oc-img ho"><span>🛫</span><div class="oc-badge">HOT DEAL</div></div>
+        <div class="oc-body"><div class="oc-title">Mumbai → Bangalore</div><div class="oc-desc">10 flights · Direct routes · Dijkstra optimized</div><div class="oc-price">From ₹2,799</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPULAR ROUTES -->
+  <div class="routes-sec">
+    <div class="sec-hd"><div class="sec-title">🔥 Popular Routes</div></div>
+    <div class="routes-grid">
+      <div class="rchip" onclick="quickSearch('Delhi','Mumbai','flights')"><div class="rchip-left"><div class="rr">Delhi → Mumbai ✈️</div><div class="rp">From ₹2,299</div><div class="rd">⚙ Merge Sort + Binary Search</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Mumbai','Goa','trains')"><div class="rchip-left"><div class="rr">Mumbai → Goa 🚂</div><div class="rp">From ₹580</div><div class="rd">⚙ Priority Queue seats</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Bangalore','Goa','buses')"><div class="rchip-left"><div class="rr">Bangalore → Goa 🚌</div><div class="rp">From ₹649</div><div class="rd">⚙ Dijkstra route</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Chennai','Bangalore','trains')"><div class="rchip-left"><div class="rr">Chennai → Bangalore 🚂</div><div class="rp">From ₹320</div><div class="rd">⚙ Stack search history</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Delhi','Varanasi','trains')"><div class="rchip-left"><div class="rr">Delhi → Varanasi 🚂</div><div class="rp">From ₹450</div><div class="rd">⚙ Min-Heap seat assign</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Mumbai','Pune','buses')"><div class="rchip-left"><div class="rr">Mumbai → Pune 🚌</div><div class="rp">From ₹199</div><div class="rd">⚙ HashMap city lookup</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Delhi','Goa','flights')"><div class="rchip-left"><div class="rr">Delhi → Goa ✈️</div><div class="rp">From ₹3,699</div><div class="rd">⚙ Dynamic pricing</div></div><div class="rchip-arr">›</div></div>
+      <div class="rchip" onclick="quickSearch('Delhi','Jaipur','buses')"><div class="rchip-left"><div class="rr">Delhi → Jaipur 🚌</div><div class="rp">From ₹299</div><div class="rd">⚙ Binary Search filter</div></div><div class="rchip-arr">›</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESULTS PAGE ═══ -->
+<div class="page" id="page-results">
+  <div class="rp-header">
+    <div class="rp-inner">
+      <div class="rp-title" id="r-title">Results</div>
+      <div class="rp-meta">
+        <span id="r-count">Loading…</span>
+        <span class="algo-tag">🔀 Merge Sort O(n log n)</span>
+        <span class="algo-tag">🔎 Binary Search O(log n)</span>
+        <span class="algo-tag">💰 Dynamic Pricing</span>
+        <span class="algo-tag">🏔 Priority Queue Seats</span>
+      </div>
+    </div>
+  </div>
+  <div class="rl-wrap">
+    <!-- FILTERS -->
+    <div class="fp">
+      <div class="fp-hd"><div class="fp-title">🎛 Filters</div><div class="fp-reset" onclick="resetFilters()">Reset All</div></div>
+      <div class="fp-sec">
+        <div class="fp-label">Budget <span class="dsa-mini">Binary Search</span></div>
+        <div class="fp-price-row">
+          <input type="number" class="fp-pi" id="f-min" placeholder="₹ Min" value="0">
+          <input type="number" class="fp-pi" id="f-max" placeholder="₹ Max" value="30000">
+        </div>
+        <input type="range" class="fp-slider" id="f-slider" min="0" max="30000" step="100" value="30000" oninput="onSlider(this.value)">
+        <div class="fp-slider-lbl">Up to ₹<span id="sv">30,000</span></div>
+      </div>
+      <div class="fp-sec" id="fp-class">
+        <div class="fp-label">Class <span class="dsa-mini">Priority Queue</span></div>
+        <div class="chips" id="class-chips"></div>
+      </div>
+      <div class="fp-sec" id="fp-bus" style="display:none;">
+        <div class="fp-label">Bus Type</div>
+        <div class="chips">
+          <button class="chip on" onclick="setBusType(this,'all')">All</button>
+          <button class="chip" onclick="setBusType(this,'Volvo AC')">Volvo AC</button>
+          <button class="chip" onclick="setBusType(this,'AC Sleeper')">AC Sleeper</button>
+          <button class="chip" onclick="setBusType(this,'AC Seater')">AC Seater</button>
+          <button class="chip" onclick="setBusType(this,'Non-AC Sleeper')">Non-AC Sleeper</button>
+          <button class="chip" onclick="setBusType(this,'Non-AC Seater')">Non-AC Seater</button>
+          <button class="chip" onclick="setBusType(this,'Luxury Sleeper')">Luxury</button>
+        </div>
+      </div>
+      <div class="fp-sec" id="fp-direct">
+        <div class="fp-label">Stops</div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.85rem;color:var(--text2);font-weight:600;">
+          <input type="checkbox" id="f-direct" style="accent-color:var(--sky);" onchange="doSearch()"> Direct only
+        </label>
+      </div>
+      <div class="fp-sec">
+        <div class="fp-label">Sort By <span class="dsa-mini">Merge Sort</span></div>
+        <select class="fp-sort" id="f-sort" onchange="doSearch()">
+          <option value="price">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="duration">Fastest First</option>
+          <option value="departure">Earliest Departure</option>
+        </select>
+      </div>
+      <div class="fp-dsa">
+        <h4>⚙ DSA Active on Results</h4>
+        <p>🔀 <b>Merge Sort</b> — O(n log n) stable sort<br>🔎 <b>Binary Search</b> — Price range O(log n)<br>💰 <b>Dynamic Pricing</b> — Real-time surge<br>🗺 <b>HashMap</b> — City autocomplete O(1)<br>🏔 <b>Priority Queue</b> — Seat assignment</p>
+      </div>
+    </div>
+    <!-- RESULTS -->
+    <div><div class="rc-list" id="results-list"></div></div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="page" id="page-dashboard">
+  <div class="dash-hd">
+    <h1 id="dash-name">My Bookings</h1>
+    <p id="dash-email">Manage your trips</p>
+  </div>
+  <div class="dash-body" id="dash-body"></div>
+</div>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="overlay" id="auth-modal">
+  <div class="modal">
+    <button class="mcl" onclick="closeAuth()">✕</button>
+    <div id="form-login">
+      <h2>Welcome Back 👋</h2>
+      <div class="modal-sub">Sign in to your YatraGo account</div>
+      <div class="err" id="login-err"></div>
+      <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="you@email.com"></div>
+      <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+      <button class="submit-btn" onclick="doLogin()">Sign In →</button>
+      <div class="fsw">No account? <a onclick="switchAuth('signup')">Create one free</a></div>
+    </div>
+    <div id="form-signup" style="display:none;">
+      <h2>Create Account 🚀</h2>
+      <div class="modal-sub">Priority seat based on your profile — DSA powered</div>
+      <div class="err" id="signup-err"></div>
+      <div class="fg-2">
+        <div class="fg"><label>Full Name</label><input type="text" id="su-name" placeholder="Rahul Sharma"></div>
+        <div class="fg"><label>Phone</label><input type="tel" id="su-phone" placeholder="+91 98765..."></div>
+      </div>
+      <div class="fg"><label>Email</label><input type="email" id="su-email" placeholder="you@email.com"></div>
+      <div class="fg-2">
+        <div class="fg"><label>Age</label><input type="number" id="su-age" placeholder="25" min="1" max="120"></div>
+        <div class="fg"><label>Gender</label>
+          <select id="su-gender"><option value="other">Prefer not to say</option><option value="male">Male</option><option value="female">Female</option></select>
+        </div>
+      </div>
+      <div class="fg" style="display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" id="su-dis" style="width:auto;accent-color:var(--sky);">
+        <label style="margin:0;font-size:0.85rem;color:var(--text2);font-weight:600;">♿ Person with disability — Priority 1 seat (highest)</label>
+      </div>
+      <div class="fg"><label>Password</label><input type="password" id="su-pass" placeholder="Min 6 characters"></div>
+      <button class="submit-btn" onclick="doSignup()">Create Account →</button>
+      <div class="fsw">Have account? <a onclick="switchAuth('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BOOKING MODAL ═══ -->
+<div class="overlay" id="book-modal">
+  <div class="modal">
+    <button class="mcl" onclick="closeBook()">✕</button>
+    <h2>Complete Booking</h2>
+    <div class="modal-sub">⚙ Min-Heap Priority Queue assigns seats — disability first</div>
+    <div class="bsum" id="book-summary"></div>
+    <div class="pv">
+      <div class="pv-t">⚙ Priority Queue — Min-Heap Seat Assignment Order</div>
+      <div class="pv-levels">
+        <div class="pv-l" id="pl-1"><span class="pv-dot" style="background:#ef4444"></span>Priority 1: ♿ Disability — Always first seat</div>
+        <div class="pv-l" id="pl-2"><span class="pv-dot" style="background:#ec4899"></span>Priority 2: 👩 Women age 40+ — Second</div>
+        <div class="pv-l" id="pl-3"><span class="pv-dot" style="background:#f97316"></span>Priority 3: 👴 Senior age 60+ — Third</div>
+        <div class="pv-l" id="pl-4"><span class="pv-dot" style="background:var(--sky)"></span>Priority 4: 👤 General — Standard</div>
+      </div>
+    </div>
+    <div class="err" id="book-err"></div>
+    <!-- Passengers -->
+    <div class="pax-list" id="pax-list"></div>
+    <button class="add-pax-btn" onclick="addPassenger()">+ Add Another Passenger</button>
+    <div class="fg-2">
+      <div class="fg"><label>Contact Email</label><input type="email" id="p-email"></div>
+      <div class="fg"><label>Contact Phone</label><input type="tel" id="p-phone"></div>
+    </div>
+    <button class="submit-btn" onclick="confirmBooking()">Confirm & Book All →</button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const API='http://localhost:3001/api';
+let currentUser=null,currentType='flights',allResults=[],pendingBooking=null;
+let selectedClass=null,selectedBusType='all',passengerCount=1;
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload=()=>{
+  const d=new Date();d.setDate(d.getDate()+1);
+  document.getElementById('s-date').value=d.toISOString().split('T')[0];
+  document.getElementById('s-date').min=new Date().toISOString().split('T')[0];
+  document.getElementById('s-date').addEventListener('change',e=>{
+    const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const dt=new Date(e.target.value+'T00:00:00');
+    document.getElementById('date-day').textContent=days[dt.getDay()];
+  });
+  const t=localStorage.getItem('yg_token'),u=localStorage.getItem('yg_user');
+  if(t&&u){currentUser=JSON.parse(u);updateNav();}
+};
+
+// ── NAV ───────────────────────────────────────────────────────
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  window.scrollTo(0,0);
+  if(p==='dashboard'){if(!currentUser){openAuth('login');return;}loadDashboard();}
+}
+function setNavTab(btn,type){
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentType=type;
+  document.querySelectorAll('.s-tab').forEach((b,i)=>b.classList.toggle('active',['flights','trains','buses'][i]===type));
+  showPage('home');
+}
+function setSearchTab(btn,type){
+  document.querySelectorAll('.s-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentType=type;
+}
+function quickSearch(from,to,type){
+  currentType=type;
+  document.querySelectorAll('.s-tab').forEach((b,i)=>b.classList.toggle('active',['flights','trains','buses'][i]===type));
+  document.getElementById('s-from').value=from;
+  document.getElementById('s-to').value=to;
+  doSearch();
+}
+function swapCities(){
+  const f=document.getElementById('s-from'),t=document.getElementById('s-to');
+  [f.value,t.value]=[t.value,f.value];
+}
+
+// ── CITIES ────────────────────────────────────────────────────
+async function fetchCities(inp){
+  if(inp.value.length<2)return;
+  try{
+    const r=await fetch(`${API}/cities?q=${encodeURIComponent(inp.value)}`);
+    const cities=await r.json();
+    document.getElementById('cdl').innerHTML=cities.map(c=>`<option value="${c}">`).join('');
+  }catch(e){}
+}
+
+// ── SEARCH ────────────────────────────────────────────────────
+async function doSearch(){
+  const from=document.getElementById('s-from').value.trim();
+  const to=document.getElementById('s-to').value.trim();
+  selectedClass=null;
+  showPage('results');
+  document.getElementById('r-title').textContent=`${currentType.charAt(0).toUpperCase()+currentType.slice(1)}: ${from||'All'} → ${to||'All'}`;
+  document.getElementById('r-count').textContent='Searching…';
+
+  // Setup filter sections
+  const fcl=document.getElementById('fp-class'),fbu=document.getElementById('fp-bus'),fdi=document.getElementById('fp-direct');
+  if(currentType==='flights'){
+    fcl.style.display='block';fbu.style.display='none';fdi.style.display='block';
+    document.getElementById('class-chips').innerHTML=['Economy','Business','First Class'].map(c=>`<button class="chip" onclick="filterClass(this,'${c}')">${c}</button>`).join('');
+  }else if(currentType==='trains'){
+    fcl.style.display='block';fbu.style.display='none';fdi.style.display='none';
+    document.getElementById('class-chips').innerHTML=['Sleeper','3AC','2AC','1AC','CC','EC'].map(c=>`<button class="chip" onclick="filterClass(this,'${c}')">${c}</button>`).join('');
+  }else{
+    fcl.style.display='none';fbu.style.display='block';fdi.style.display='none';
+  }
+
+  const list=document.getElementById('results-list');
+  list.innerHTML=[0,1,2,3,4].map(i=>`<div class="rcard" style="animation-delay:${i*.08}s"><div class="skel" style="height:140px;margin:16px;border-radius:10px;"></div></div>`).join('');
+
+  try{
+    const p=new URLSearchParams();
+    if(from)p.set('from',from);if(to)p.set('to',to);
+    p.set('sort',document.getElementById('f-sort').value);
+    const mn=document.getElementById('f-min').value,mx=document.getElementById('f-max').value;
+    if(mn&&mn!=='0')p.set('minP',mn);
+    if(mx&&mx!=='30000')p.set('maxP',mx);
+    if(currentType==='flights'&&document.getElementById('f-direct').checked)p.set('direct','1');
+    if(currentType==='buses'&&selectedBusType!=='all')p.set('busType',selectedBusType);
+    if(currentUser)p.set('userId',currentUser.id);
+    const res=await fetch(`${API}/${currentType}?${p}`);
+    allResults=await res.json();
+    renderResults();
+  }catch(e){
+    list.innerHTML=`<div class="empty-st"><span>⚠️</span><h3 style="color:var(--dark)">Backend not running</h3><p>Run: <code style="color:var(--sky)">cd backend && node server.js</code></p></div>`;
+  }
+}
+
+function onSlider(v){
+  document.getElementById('f-max').value=v;
+  document.getElementById('sv').textContent=parseInt(v).toLocaleString('en-IN');
+  doSearch();
+}
+function filterClass(btn,cls){
+  document.querySelectorAll('#class-chips .chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');selectedClass=cls;renderResults();
+}
+function setBusType(btn,type){
+  document.querySelectorAll('#fp-bus .chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');selectedBusType=type;doSearch();
+}
+function resetFilters(){
+  document.getElementById('f-min').value=0;document.getElementById('f-max').value=30000;
+  document.getElementById('f-slider').value=30000;document.getElementById('sv').textContent='30,000';
+  document.getElementById('f-sort').value='price';doSearch();
+}
+
+function renderResults(){
+  const mx=parseInt(document.getElementById('f-max').value)||30000;
+  const mn=parseInt(document.getElementById('f-min').value)||0;
+  let items=allResults.filter(r=>r.minPrice>=mn&&r.minPrice<=mx);
+  document.getElementById('r-count').textContent=`${items.length} results found`;
+  const list=document.getElementById('results-list');
+  if(!items.length){list.innerHTML=`<div class="empty-st"><span>🔍</span><h3>No results</h3><p>Try different route or adjust filters</p></div>`;return;}
+  list.innerHTML=items.map((item,i)=>buildCard(item,i)).join('');
+}
+
+function buildCard(item,i){
+  const isF=currentType==='flights',isT=currentType==='trains',isB=currentType==='buses';
+  const name=item.airline||item.name||item.operator;
+  const logo=item.airline_code||(item.number||'').slice(0,3)||name.slice(0,2).toUpperCase();
+  const stops=item.stops||[];
+  const baseP=isB?item.price:isF?Math.min(...[item.price_economy,item.price_business,item.price_first].filter(Boolean)):Math.min(...[item.price_sleeper,item.price_3ac,item.price_2ac,item.price_1ac,item.price_cc,item.price_ec].filter(Boolean));
+  const isSurge=item.minPrice>baseP*1.12;
+  const dur=item.duration_mins?`${Math.floor(item.duration_mins/60)}h ${item.duration_mins%60}m`:item.duration||'--';
+
+  // Stations row
+  const fromSt=item.from_airport||item.from_station||item.from_stop||'';
+  const toSt=item.to_airport||item.to_station||item.to_stop||'';
+  const stationsHtml=`<div class="stations-row">
+    <div class="station-item"><div class="station-dot"></div><b>${item.from}</b>: ${fromSt}</div>
+    ${stops.length?`<span style="color:var(--sky3)">→</span>`:''} 
+    ${stops.length?`<span style="color:var(--navy3);font-weight:600;">${stops.length} intermediate stop${stops.length>1?'s':''}</span>`:''}
+    <span style="color:var(--sky3)">→</span>
+    <div class="station-item"><div class="station-dot"></div><b>${item.to}</b>: ${toSt}</div>
+  </div>`;
+
+  // Stops path map (Dijkstra visual)
+  let stopsMapHtml='';
+  if(stops.length>0){
+    const all=[item.from,...stops,item.to];
+    stopsMapHtml=`<div class="stops-map">
+      <div class="stops-map-label">🗺 Route Map <span style="font-size:0.62rem;color:var(--text4);font-weight:500;">(Dijkstra path — black dots = stations/stops)</span></div>
+      <div class="stops-path">
+        ${all.map((s,idx)=>`
+          <div class="sp-node ${idx===0?'src':idx===all.length-1?'dst':''}">
+            <div class="sp-name">${s}</div>
+            <div class="sp-dot"></div>
+          </div>
+          ${idx<all.length-1?'<div class="sp-edge"></div>':''}
+        `).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Classes
+  let clsHtml='';
+  if(isF){
+    const cls=[
+      {l:'Economy',p:item.dynamicPrices?.economy,s:item.seats_economy},
+      {l:'Business',p:item.dynamicPrices?.business,s:item.seats_business},
+      {l:'First Class',p:item.dynamicPrices?.first,s:item.seats_first},
+    ].filter(c=>c.p);
+    clsHtml=`<div class="classes-row"><span class="cr-lbl">Select Class <span style="font-size:0.6rem;color:var(--sky)">(⚙ Priority Queue assigns seat)</span>:</span>
+      ${cls.map(c=>`<button class="cls-btn" onclick="selClass(this,'${c.l}',${c.p})"><span class="cn">${c.l}</span><span class="cp">₹${c.p.toLocaleString('en-IN')}</span><span class="cs">${c.s||0} seats</span></button>`).join('')}
+    </div>`;
+  }else if(isT){
+    const cls=[
+      {l:'Sleeper',p:item.dynamicPrices?.sleeper,s:item.seats_sleeper},
+      {l:'3AC',p:item.dynamicPrices?.['3ac'],s:item.seats_3ac},
+      {l:'2AC',p:item.dynamicPrices?.['2ac'],s:item.seats_2ac},
+      {l:'1AC',p:item.dynamicPrices?.['1ac'],s:item.seats_1ac},
+      {l:'CC',p:item.dynamicPrices?.cc,s:item.seats_cc},
+      {l:'EC',p:item.dynamicPrices?.ec,s:item.seats_ec},
+    ].filter(c=>c.p);
+    clsHtml=`<div class="classes-row"><span class="cr-lbl">Select Class <span style="font-size:0.6rem;color:var(--sky)">(⚙ Min-Heap seat)</span>:</span>
+      ${cls.map(c=>`<button class="cls-btn" onclick="selClass(this,'${c.l}',${c.p})"><span class="cn">${c.l}</span><span class="cp">₹${c.p.toLocaleString('en-IN')}</span><span class="cs">${c.s||0}</span></button>`).join('')}
+    </div>`;
+  }
+
+  // Train number
+  const trainInfo=isT?`<span class="tag b">#${item.number}</span>`:'';
+
+  return `<div class="rcard" style="animation-delay:${i*.06}s">
+    <div class="rc-top">
+      <div class="airline-box">${logo}</div>
+      <div class="route-mid-wrap">
+        <div class="time-blk">
+          <div class="t-time">${item.departure}</div>
+          <div class="t-city">${item.from}</div>
+          <div class="t-airport">${fromSt}</div>
+        </div>
+        <div class="mid-line-wrap">
+          <div class="mid-dur">${dur}</div>
+          <div class="mid-line">${stops.length?`<div class="stop-dot-mid"></div>`:''}</div>
+          <div class="mid-stops-txt ${item.is_direct===1||stops.length===0?'direct-lbl':'stop-lbl'}">
+            ${item.is_direct===1||stops.length===0?'✓ Direct':'⚪ '+stops.length+' Stop'+(stops.length>1?'s':'')}
+          </div>
+        </div>
+        <div class="time-blk">
+          <div class="t-time">${item.arrival}</div>
+          <div class="t-city">${item.to}</div>
+          <div class="t-airport">${toSt}</div>
+        </div>
+      </div>
+      <div class="price-blk">
+        <div class="p-from">starts from</div>
+        <div class="p-val">₹${item.minPrice.toLocaleString('en-IN')}</div>
+        <div class="p-per">per person</div>
+        ${isSurge?'<div class="p-surge">⚡ Surge pricing</div>':''}
+      </div>
+    </div>
+    ${stationsHtml}
+    ${stops.length>0?stopsMapHtml:''}
+    ${clsHtml}
+    <div class="dsa-row">
+      <span class="dsa-tag">⚙ DSA</span>
+      <span class="dsa-txt">🔀 Merge Sort rank #${i+1} · 🔎 Binary Search indexed · ${isSurge?'⚡ Dynamic Pricing active (book early = cheaper)':'✓ Base price — early bird'}</span>
+    </div>
+    <div class="rc-bot">
+      ${isB?`<span class="tag b">${item.bus_type}</span>`:''}
+      ${trainInfo}
+      ${isB?`<span class="tag">${item.from_stop}</span>`:''}
+      <span class="tag ${(isB?item.seats:isF?item.seats_economy:item.seats_3ac||item.seats_sleeper||0)>30?'g':'o'}">${isB?item.seats:isF?(item.seats_economy||0):(item.seats_3ac||item.seats_sleeper||0)} seats left</span>
+      ${isSurge?'<span class="tag r">⚡ Price rising</span>':'<span class="tag g">✓ Best price now</span>'}
+      <button class="book-btn" onclick="startBook('${item.id}')">Book Now →</button>
+    </div>
+  </div>`;
+}
+
+function selClass(el,cls,price){
+  document.querySelectorAll('.cls-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');selectedClass={label:cls,price};
+}
+
+// ── BOOKING ───────────────────────────────────────────────────
+function buildPassengerHTML(idx){
+  return `<div class="pax-item" id="pax-${idx}">
+    <div class="pax-num">Passenger ${idx+1} ${idx===0?'(Primary)':''}</div>
+    ${idx>0?`<button class="pax-remove" onclick="removePax(${idx})">✕</button>`:''}
+    <div class="fg-2">
+      <div class="fg"><label>Full Name</label><input type="text" id="p-name-${idx}" placeholder="As on ID"></div>
+      <div class="fg"><label>Age</label><input type="number" id="p-age-${idx}" placeholder="25" oninput="updatePriority()" min="1" max="120"></div>
+    </div>
+    <div class="fg-2">
+      <div class="fg"><label>Gender</label>
+        <select id="p-gender-${idx}" onchange="updatePriority()">
+          <option value="other">Other</option><option value="male">Male</option><option value="female">Female (Priority if 40+)</option>
+        </select>
+      </div>
+      <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:24px;">
+        <input type="checkbox" id="p-dis-${idx}" style="width:auto;accent-color:var(--sky);" onchange="updatePriority()">
+        <label style="margin:0;font-size:0.8rem;color:var(--text2);font-weight:600;">♿ Disability (Priority 1)</label>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addPassenger(){
+  passengerCount++;
+  document.getElementById('pax-list').insertAdjacentHTML('beforeend',buildPassengerHTML(passengerCount-1));
+  updateBookSummary();
+}
+function removePax(idx){
+  document.getElementById('pax-'+idx)?.remove();
+  passengerCount=Math.max(1,passengerCount-1);
+  updateBookSummary();
+}
+
+function startBook(itemId){
+  if(!currentUser){openAuth('login');return;}
+  const item=allResults.find(r=>r.id===itemId);
+  if(!item)return;
+  pendingBooking={item,type:currentType};
+  const price=selectedClass?.price||item.minPrice;
+  const cls=selectedClass?.label||(currentType==='flights'?'Economy':currentType==='trains'?'Sleeper':'Standard');
+  pendingBooking.price=price;pendingBooking.cls=cls;
+  passengerCount=1;
+  document.getElementById('pax-list').innerHTML=buildPassengerHTML(0);
+  document.getElementById('p-email').value=currentUser.email||'';
+  document.getElementById('p-phone').value=currentUser.phone||'';
+  document.getElementById('book-err').classList.remove('show');
+  // Pre-fill from profile
+  if(currentUser.age)document.getElementById('p-age-0').value=currentUser.age;
+  if(currentUser.gender)document.getElementById('p-gender-0').value=currentUser.gender;
+  if(currentUser.disability)document.getElementById('p-dis-0').checked=true;
+  updateBookSummary();updatePriority();
+  document.getElementById('book-modal').classList.add('open');
+}
+
+function updateBookSummary(){
+  if(!pendingBooking)return;
+  const item=pendingBooking.item;
+  const name=item.airline||item.name||item.operator;
+  const paxCnt=document.querySelectorAll('.pax-item').length;
+  const total=(pendingBooking.price||0)*paxCnt;
+  document.getElementById('book-summary').innerHTML=`
+    <div class="bs-r"><span>Route</span><span>${item.from} → ${item.to}</span></div>
+    <div class="bs-r"><span>Carrier</span><span>${name}</span></div>
+    <div class="bs-r"><span>Departure</span><span>${item.departure} (${item.duration_mins?Math.floor(item.duration_mins/60)+'h '+item.duration_mins%60+'m':item.duration||''})</span></div>
+    <div class="bs-r"><span>Class</span><span>${pendingBooking.cls}</span></div>
+    <div class="bs-r"><span>Passengers</span><span>${paxCnt} person${paxCnt>1?'s':''}</span></div>
+    <div class="bs-r"><span>Per Person</span><span>₹${(pendingBooking.price||0).toLocaleString('en-IN')}</span></div>
+    <div class="bs-r" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span style="font-weight:700;">Total Amount</span><span style="color:var(--sky);font-size:1.1rem;font-weight:900;">₹${total.toLocaleString('en-IN')}</span></div>`;
+}
+
+function updatePriority(){
+  updateBookSummary();
+  // Find primary passenger priority
+  const age=parseInt(document.getElementById('p-age-0')?.value)||0;
+  const gender=document.getElementById('p-gender-0')?.value||'other';
+  const dis=document.getElementById('p-dis-0')?.checked||false;
+  let p=4;if(dis)p=1;else if(gender==='female'&&age>=40)p=2;else if(age>=60)p=3;
+  [1,2,3,4].forEach(x=>{
+    const el=document.getElementById('pl-'+x);
+    if(el){el.classList.toggle('on',x===p);el.style.fontWeight=x===p?'700':'400';}
+  });
+}
+
+function closeBook(){document.getElementById('book-modal').classList.remove('open');}
+
+async function confirmBooking(){
+  const paxEls=document.querySelectorAll('.pax-item');
+  const passengers=[];
+  let valid=true;
+  paxEls.forEach((el,i)=>{
+    const idx=parseInt(el.id.split('-')[1]);
+    const name=document.getElementById(`p-name-${idx}`)?.value.trim();
+    const age=document.getElementById(`p-age-${idx}`)?.value;
+    const gender=document.getElementById(`p-gender-${idx}`)?.value||'other';
+    const disability=document.getElementById(`p-dis-${idx}`)?.checked||false;
+    if(!name||!age)valid=false;
+    passengers.push({name,age,gender,disability});
+  });
+  const email=document.getElementById('p-email').value.trim();
+  const phone=document.getElementById('p-phone').value.trim();
+  const err=document.getElementById('book-err');
+  if(!valid||!email){err.textContent='Please fill all passenger details';err.classList.add('show');return;}
+  const token=localStorage.getItem('yg_token');
+  try{
+    const res=await fetch(`${API}/bookings/multi`,{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body:JSON.stringify({type:pendingBooking.type,itemId:pendingBooking.item.id,passengers,travelClass:pendingBooking.cls,contactEmail:email,contactPhone:phone})
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Booking failed');
+    closeBook();
+    const seatsStr=data.seatAssignments?.map(s=>`${s.name}→Seat ${s.seat}`).join(', ')||'assigned';
+    toast(`✅ Booked! ${data.id} | ${passengers.length} passenger${passengers.length>1?'s':''} | Seats: ${seatsStr}`,'success');
+    setTimeout(()=>showPage('dashboard'),2000);
+  }catch(e){err.textContent=e.message;err.classList.add('show');}
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+async function loadDashboard(){
+  document.getElementById('dash-name').textContent=`Hey ${currentUser.name}! ✈️`;
+  document.getElementById('dash-email').textContent=currentUser.email+' — Priority Queue seats assigned automatically';
+  const body=document.getElementById('dash-body');
+  body.innerHTML='<div style="text-align:center;padding:40px;color:var(--text4)">Loading…</div>';
+  const token=localStorage.getItem('yg_token');
+  try{
+    const res=await fetch(`${API}/bookings/my`,{headers:{'Authorization':`Bearer ${token}`}});
+    const bks=await res.json();
+    if(!bks.length){body.innerHTML=`<div class="dash-empty"><span class="de-icon">✈️</span><h3 style="font-size:1.3rem;font-weight:800;color:var(--dark);">No bookings yet</h3><p style="color:var(--text3);margin-top:8px;">Search and book your first trip!</p><button class="submit-btn" onclick="showPage('home')" style="max-width:200px;margin-top:20px;">Explore Trips</button></div>`;return;}
+    body.innerHTML=bks.map((b,i)=>{
+      const item=b.item||{};
+      const seats=b.seat_assignments?JSON.parse(typeof b.seat_assignments==='string'?b.seat_assignments:'[]'):[];
+      return `<div class="bcard" style="animation-delay:${i*.08}s">
+        <div class="bcard-top">
+          <span class="tb tb-${b.type}">${b.type.toUpperCase()}</span>
+          <span class="${b.status==='Confirmed'?'sc sc-ok':'sc sc-no'}">${b.status}</span>
+          ${seats.length?seats.map(s=>`<span class="seat-badge">🪑 ${s.name}: Seat ${s.seat}</span>`).join(''):b.seat_number?`<span class="seat-badge">🪑 ${b.seat_number}</span>`:''}
+          <span style="margin-left:auto;font-size:0.7rem;color:var(--text4);">${b.id}</span>
+        </div>
+        <div class="bcard-route">${item.from||''} → ${item.to||''}</div>
+        <div class="bcard-meta">${item.airline||item.name||item.operator||''} · Dep: ${item.departure||''} · ${b.travel_class||'Standard'} · ${b.priority_label||''}</div>
+        <div class="bcard-bot">
+          <div class="bcard-amt">₹${(b.total_amount||0).toLocaleString('en-IN')}</div>
+          ${b.status==='Confirmed'?`<button class="cancel-s" onclick="cancelBooking('${b.id}')">Cancel</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){body.innerHTML='<div class="dash-empty"><span class="de-icon">⚠️</span><p>Server not running</p></div>';}
+}
+
+async function cancelBooking(id){
+  if(!confirm('Cancel this booking?'))return;
+  const token=localStorage.getItem('yg_token');
+  await fetch(`${API}/bookings/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}});
+  toast('Booking cancelled','error');loadDashboard();
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+function openAuth(f){document.getElementById('auth-modal').classList.add('open');switchAuth(f);}
+function closeAuth(){document.getElementById('auth-modal').classList.remove('open');}
+function switchAuth(f){
+  document.getElementById('form-login').style.display=f==='login'?'block':'none';
+  document.getElementById('form-signup').style.display=f==='signup'?'block':'none';
+}
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim(),pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('login-err');
+  if(!email||!pass){err.textContent='Please fill all fields';err.classList.add('show');return;}
+  try{
+    const res=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const data=await res.json();
+    if(!res.ok){err.textContent=data.error;err.classList.add('show');return;}
+    currentUser=data.user;localStorage.setItem('yg_token',data.token);localStorage.setItem('yg_user',JSON.stringify(data.user));
+    updateNav();closeAuth();toast(`Welcome back, ${data.user.name}! 👋`,'success');
+  }catch(e){err.textContent='Server not running on port 3001';err.classList.add('show');}
+}
+async function doSignup(){
+  const name=document.getElementById('su-name').value.trim(),email=document.getElementById('su-email').value.trim();
+  const pass=document.getElementById('su-pass').value,phone=document.getElementById('su-phone').value;
+  const age=document.getElementById('su-age').value,gender=document.getElementById('su-gender').value;
+  const disability=document.getElementById('su-dis').checked;
+  const err=document.getElementById('signup-err');
+  if(!name||!email||!pass){err.textContent='Please fill all required fields';err.classList.add('show');return;}
+  if(pass.length<6){err.textContent='Password must be at least 6 characters';err.classList.add('show');return;}
+  try{
+    const res=await fetch(`${API}/auth/signup`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass,phone,age,gender,disability})});
+    const data=await res.json();
+    if(!res.ok){err.textContent=data.error;err.classList.add('show');return;}
+    currentUser=data.user;localStorage.setItem('yg_token',data.token);localStorage.setItem('yg_user',JSON.stringify(data.user));
+    updateNav();closeAuth();toast(`Account created! Welcome ${data.user.name}! 🎉`,'success');
+  }catch(e){err.textContent='Server not running on port 3001';err.classList.add('show');}
+}
+function doLogout(){
+  currentUser=null;localStorage.removeItem('yg_token');localStorage.removeItem('yg_user');
+  document.getElementById('user-area').style.display='none';
+  document.getElementById('auth-btns').style.display='flex';
+  showPage('home');toast('Logged out successfully','info');
+}
+function updateNav(){
+  document.getElementById('auth-btns').style.display='none';
+  const ua=document.getElementById('user-area');
+  ua.style.display='flex';ua.style.alignItems='center';
+  document.getElementById('nav-av').textContent=currentUser.name.charAt(0).toUpperCase();
+}
+function toast(msg,type='info'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),5500);
+}
+document.getElementById('auth-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAuth();});
+document.getElementById('book-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeBook();});
+</script>
+</body>
+</html>
