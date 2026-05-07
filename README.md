@@ -1,27 +1,27 @@
-# 🎓 GuruKhoj — AI-Powered Home Tutor Finder
+# 🚌 YatraGo — Travel Ticket Booking System
 
-> An intelligent tutor discovery platform with ML-based recommendations.  
-> Individual college project — Graphic Era Hill University, Dehradun.
+> A full-stack travel booking web application supporting Bus, Train, and Flight ticket bookings.  
+> Developed as a group college project at Graphic Era Hill University.
 
 ---
 
 ## 📌 About The Project
 
-**GuruKhoj** is a web application that helps students find the right home tutor using **AI/ML-based recommendations**. Students can browse tutors, view profiles, and get personalized suggestions based on their requirements.
+**YatraGo** is a web-based travel ticket booking platform where users can search routes, book tickets, and manage their travel across buses, trains, and flights.
 
-Built with Python Flask and powered by a machine learning recommendation engine.
+The system includes a complete **MySQL relational database** with 11 tables handling users, routes, bookings, seats, and passenger management.
 
 ---
 
 ## ✨ Features
 
-- 👤 Student & Teacher Registration / Login
-- 🔍 Smart Tutor Search with filters
-- 🤖 AI-Based Tutor Recommendations (ML)
-- 📊 Student Performance Predictor
-- 🏫 Teacher Dashboard & Profile Management
-- 🎛️ Admin Panel
-- 💬 EduBot — NLP-based chatbot assistant
+- 🔐 User Registration & Login
+- ✈️ Search & Book — Flights, Trains, Buses
+- 💺 Seat Selection & Booking Management
+- 👥 Passenger Details per Booking
+- 🗺️ Route Graph for city-to-city travel
+- 📋 Booking History & Search History
+- 🗄️ Complete MySQL Database (ready to import)
 
 ---
 
@@ -29,79 +29,84 @@ Built with Python Flask and powered by a machine learning recommendation engine.
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Python, Flask |
 | Frontend | HTML, CSS, JavaScript |
-| Database | SQLite |
-| ML/AI | Scikit-learn, Random Forest, NLP |
-| Libraries | NumPy |
+| Backend | Node.js, Express.js |
+| Database | MySQL (11 tables) |
+| Tools | XAMPP, phpMyAdmin |
 
 ---
 
-## 👨‍💻 About This Project
+## 👨‍💻 Team & My Contribution
 
-This was an **individual project** built by Umang Shaily.
+This was a **group college project**.
 
-- Complete Flask web application
-- ML recommendation engine using Random Forest
-- NLP-based EduBot chatbot
-- SQLite database design
-- Manual testing and bug fixing throughout development
+| Contribution | Details |
+|-------------|---------|
+| **My Role** | **SQL Database Design & QA Testing** |
+| Database | Designed & built complete MySQL schema — 11 tables: users, cities, flights, trains, buses, bookings, booking_passengers, seats, route_graph, search_history, booking_queue |
+| Testing | Wrote manual test cases for booking flow, login, seat selection, and passenger validation |
+| QA | Identified and reported bugs during development |
 
 ---
 
 ## 🚀 How To Run
 
 ### Requirements
-- Python 3.8 or above
-- pip
+- [Node.js](https://nodejs.org/) installed
+- [XAMPP](https://www.apachefriends.org/) installed (for MySQL)
 
 ### Step 1 — Clone the repository
 ```bash
-git clone https://github.com/umange12/gurukhoj.git
-cd gurukhoj
+git clone https://github.com/umange12/yatrago.git
+cd yatrago
 ```
 
-### Step 2 — Install dependencies
+### Step 2 — Import the Database
+1. Open **XAMPP** → Start **Apache** and **MySQL**
+2. Open browser → go to `http://localhost/phpmyadmin`
+3. Click **"Import"** → Select `backend/yatragodb.sql`
+4. Click **"Go"** — database will be created automatically ✅
+
+### Step 3 — Setup Backend
 ```bash
-pip install -r requirements.txt
+cd backend
+npm install
 ```
 
-### Step 3 — Run the app
+### Step 4 — Configure Environment
+Open `backend/.env` and update:
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=yatragodb
+```
+
+### Step 5 — Run the Server
 ```bash
-python app.py
+node server.js
 ```
 
-### Step 4 — Open in browser
-```
-http://localhost:5000
-```
-
-Done! 🎉
+### Step 6 — Open the App
+Open browser → `http://localhost:3000`
 
 ---
 
-## 📁 Project Structure
+## 🗄️ Database Schema
 
-```
-gurukhoj/
-├── app.py                  # Main Flask application
-├── model_train.py          # ML model training script
-├── requirements.txt        # Python dependencies
-├── ml/
-│   └── ai_engine.py        # AI recommendation engine
-├── templates/
-│   ├── index.html
-│   ├── login.html
-│   ├── register.html
-│   ├── our_teachers.html
-│   ├── teacher_profile.html
-│   ├── teacher_dashboard.html
-│   ├── student_portal.html
-│   └── admin.html
-└── static/
-    ├── css/style.css
-    └── js/main.js
-```
+| Table | Purpose |
+|-------|---------|
+| users | User accounts & login |
+| cities | All available cities |
+| flights | Flight data & routes |
+| trains | Train data & routes |
+| buses | Bus data & routes |
+| bookings | All bookings by users |
+| booking_passengers | Passenger info per booking |
+| seats | Seat availability |
+| route_graph | City-to-city route mapping |
+| search_history | User search logs |
+| booking_queue | Queue management |
 
 ---
 
@@ -109,21 +114,20 @@ gurukhoj/
 
 | Test Case | Input | Expected Output | Status |
 |-----------|-------|-----------------|--------|
-| TC-01: Student Registration | Valid name, email, password | Account created | ✅ Pass |
-| TC-02: Teacher Registration | Valid teacher details | Profile created | ✅ Pass |
-| TC-03: Login valid user | Correct credentials | Dashboard opens | ✅ Pass |
+| TC-01: User Registration | Valid name, email, password | Account created | ✅ Pass |
+| TC-02: Duplicate Email | Same email twice | Error shown | ✅ Pass |
+| TC-03: Login valid user | Correct credentials | Login successful | ✅ Pass |
 | TC-04: Login wrong password | Wrong password | Error message | ✅ Pass |
-| TC-05: Search tutor by subject | Subject name | Matching tutors shown | ✅ Pass |
-| TC-06: AI Recommendation | Student profile | Personalized tutors suggested | ✅ Pass |
-| TC-07: Empty search | No input | Validation error | ✅ Pass |
-| TC-08: EduBot query | Student question | Relevant bot response | ✅ Pass |
+| TC-05: Search route | Source + Destination | Results shown | ✅ Pass |
+| TC-06: Book ticket | Seat + passenger details | Booking confirmed | ✅ Pass |
+| TC-07: Empty passenger name | Blank name | Validation error | ✅ Pass |
+| TC-08: Seat already booked | Occupied seat | Seat not available error | ✅ Pass |
 
 ---
 
 ## 📄 License
 
-Academic project — Graphic Era Hill University, Dehradun.  
-Student: Umang Shaily | Roll: 2401296
+Academic project — Graphic Era Hill University, Dehradun.
 
 ---
 
